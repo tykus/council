@@ -28,6 +28,23 @@ class RegistrationTest extends TestCase
     }
 
     /** @test */
+    function newly_registered_user_receives_an_email_requesting_confirmation()
+    {
+        Mail::fake();
+
+        $this->post(route('register'), [
+            'name' => 'John',
+            'email' => 'john@example.com',
+            'password' => 'foobar',
+            'password_confirmation' => 'foobar'
+        ]);
+
+        Mail::assertQueued(PleaseConfirmYourEmail::class, function ($mail) {
+            return $mail->hasTo('john@example.com');
+        });
+    }
+    
+    /** @test */
     function user_can_fully_confirm_their_email_addresses()
     {
         Mail::fake();
